@@ -1,1 +1,38 @@
 <p>voter-dashboard works!</p>
+<div class="dashboard" *ngIf="state$ | async as state">
+      <header>
+        <h3>{{ state.currentUser?.name }}</h3>
+        <p>{{ state.currentApartment?.address }}</p>
+        <p>Tulajdoni hányad: <strong>{{ state.currentUser?.share }} / {{ state.totalShareBase }}</strong></p>
+        <button (click)="logout()" class="btn-small">Kijelentkezés</button>
+      </header>
+
+      <div class="agenda-list">
+        <h4>Napirendi pontok</h4>
+        
+        <div *ngFor="let item of state.agendaItems" class="agenda-card" [ngClass]="item.status">
+          <div class="agenda-header">
+            <span>{{ item.id }}. {{ item.title }}</span>
+            <span class="status-badge">{{ item.status }}</span>
+          </div>
+
+          <div *ngIf="item.status === 'ACTIVE'" class="voting-area">
+            <p *ngIf="hasVoted(item, state.currentUser?.id!)">
+              ✅ Szavazat rögzítve!
+            </p>
+            
+            <div *ngIf="!hasVoted(item, state.currentUser?.id!)" class="buttons">
+              <button (click)="vote(item.id, 'IGEN')" class="btn-yes">IGEN</button>
+              <button (click)="vote(item.id, 'NEM')" class="btn-no">NEM</button>
+              <button (click)="vote(item.id, 'TARTÓZKODIK')" class="btn-abs">TARTÓZKODIK</button>
+            </div>
+
+            <button (click)="speak(item.id)" class="btn-speak">📢 FELSZÓLALOK</button>
+          </div>
+
+          <div *ngIf="item.status === 'CLOSED'" class="result-area">
+             <p>Szavazás lezárva.</p>
+          </div>
+        </div>
+      </div>
+    </div>

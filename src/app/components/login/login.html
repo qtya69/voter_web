@@ -1,1 +1,29 @@
 <p>login works!</p>
+<div class="login-container">
+      <h2>Társasházi Közgyűlés Belépés</h2>
+      
+      <div class="form-group">
+        <label>Válassza ki az Albetétet:</label>
+        <select [(ngModel)]="selectedApartmentId" (change)="onApartmentChange()">
+          <option value="" disabled selected>Válasszon...</option>
+          <option *ngFor="let apt of apartments" [value]="apt.id">
+            {{ apt.address }} ({{ apt.hrsz }})
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group" *ngIf="selectedApartmentId">
+        <label>Válassza ki a Tulajdonost / Képviselőt:</label>
+        <select [(ngModel)]="selectedOwnerId">
+          <option value="" disabled selected>Válasszon...</option>
+          <option *ngFor="let owner of availableOwners" [value]="owner.id">
+            {{ owner.name }}
+          </option>
+        </select>
+      </div>
+
+      <button (click)="onLogin()" [disabled]="!selectedOwnerId" class="btn-primary">Belépés</button>
+      
+      <hr>
+      <button (click)="goToAdmin()" class="btn-secondary">Adminisztrátori felület (Demo)</button>
+    </div>

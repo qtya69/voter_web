@@ -48,7 +48,7 @@ export class VotingService {
 
   state$ = this.state.asObservable();
 
-  // --- LOGIN LOGIC ---
+  // LOGIN LOGIC
   login(apartmentId: string, ownerId: string) {
     const currentState = this.state.value;
     const apt = currentState.apartments.find(a => a.id === apartmentId);
@@ -80,7 +80,7 @@ export class VotingService {
     }
   }
 
-  // --- ADMIN LOGIC ---
+  // ADMIN LOGIC
   setAgendaStatus(itemId: number, status: 'ACTIVE' | 'CLOSED') {
     const currentState = this.state.value;
     const updatedItems = currentState.agendaItems.map(item => {
@@ -95,7 +95,7 @@ export class VotingService {
     this.state.next({ ...currentState, agendaItems: updatedItems });
   }
 
-  // --- VOTER LOGIC ---
+  // VOTER LOGIC
   castVote(itemId: number, choice: 'IGEN' | 'NEM' | 'TARTÓZKODIK') {
     const currentState = this.state.value;
     const user = currentState.currentUser;
@@ -140,7 +140,7 @@ export class VotingService {
     this.state.next({ ...currentState, agendaItems: updatedItems });
   }
 
-  // --- HELPERS ---
+  // HELPERS
   getApartments() {
     return this.state.value.apartments;
   }

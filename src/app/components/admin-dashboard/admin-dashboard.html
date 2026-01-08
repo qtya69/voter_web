@@ -1,1 +1,58 @@
 <p>admin-dashboard works!</p>
+<div class="admin-panel" *ngIf="state$ | async as state">
+      <h1>Közgyűlés Vezérlőpult</h1>
+      
+      <div class="stats-box">
+        <h3>Jelenléti Statisztika</h3>
+        <p>Összes tulajdoni hányad: {{ state.totalShareBase }}</p>
+        <p>Jelen van: <strong>{{ state.presentShare }}</strong> / {{ state.totalShareBase }}</p>
+        <div class="progress-bar">
+          <div class="fill" [style.width.%]="(state.presentShare / state.totalShareBase) * 100"></div>
+        </div>
+      </div>
+
+      <div *ngFor="let item of state.agendaItems" class="admin-card">
+        <div class="card-header">
+          <h3>{{ item.id }}. {{ item.title }}</h3>
+          <span [class]="'badge ' + item.status">{{ item.status }}</span>
+        </div>
+
+        <div class="controls">
+          <button *ngIf="item.status === 'PENDING'" (click)="setStatus(item.id, 'ACTIVE')" class="btn-start">Szavazás INDÍTÁSA</button>
+          <button *ngIf="item.status === 'ACTIVE'" (click)="setStatus(item.id, 'CLOSED')" class="btn-stop">Szavazás LEZÁRÁSA</button>
+        </div>
+
+        <div class="results" *ngIf="item.status !== 'PENDING'">
+          <h4>Eredmények (Valós időben)</h4>
+          <div class="result-row">
+            <span>IGEN: {{ sumVotes(item.votes, 'IGEN') }} th.</span>
+            <span>NEM: {{ sumVotes(item.votes, 'NEM') }} th.</span>
+            <span>TART.: {{ sumVotes(item.votes, 'TARTÓZKODIK') }} th.</span>
+          </div>
+          
+          <div *ngIf="item.status === 'ACTIVE'" class="missing">
+             <strong>Még nem szavazott:</strong>
+             <span *ngIf="getMissingVotesCount(item, state.presentShare) <= 0" style="color:green"> Mindenki szavazott!</span>
+             <span *ngIf="getMissingVotesCount(item, state.presentShare) > 0" style="color:red"> {{ getMissingVotesCount(item, state.presentShare) }} th. hiányzik</span>
+          </div>
+
+          <details>
+            <summary>Részletes lista</summary>
+            <ul>
+              <li *ngFor="let v of item.votes">
+                {{ v.ownerName }} ({{ v.share }} th.) - <strong>{{ v.choice }}</strong>
+              </li>
+            </ul>
+          </details>
+
+          <div *ngIf="item.speakers.length > 0" class="speakers">
+            <h4>Felszólalások:</h4>
+            <ul>
+              <li *ngFor="let s of item.speakers">{{ s }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <button class="btn-export" (click)="printResults()">Jegyzőkönyv Exportálása (Nyomtatás)</button>
+    </div>
